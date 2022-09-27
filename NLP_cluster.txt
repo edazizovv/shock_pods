@@ -1,0 +1,55 @@
+https://towardsdatascience.com/clustering-contextual-embeddings-for-topic-model-1fb15c45b1bd
+
+https://towardsdatascience.com/nlp-topic-modeling-to-identify-clusters-ca207244d04f
+https://medium.com/analytics-vidhya/identifying-relationships-in-clinical-text-nlp-clustering-929eb04b5942
+https://github.com/vi3k6i5/guidedlda
+
+https://medium.com/analytics-vidhya/topic-modelling-using-lda-aa11ec9bec13
+
+
+https://www.kdnuggets.com/2019/11/understanding-nlp-topic-modeling-part-1.html
+https://monkeylearn.com/topic-analysis/
+https://omdena.com/blog/topic-modeling-python-libraries-nlp-projects/
+
+------------------------
+Lemmatizing & Stemming ??
+We can add CountVectorizer to the LDA example
+Visual: word clouds from WordCloud lib
+sentence-transformers?
+bigram & trigram to add?
+
+
+
+[preproc] - https://github.com/priya-dwivedi/Deep-Learning/blob/master/topic_modeling/LDA_Newsgroup.ipynb
+
+[ensemble lda] - https://medium.com/@abhi_pawar/topic-modelling-using-ensemble-lda-71d2a78666fc
+
+[cluster cosine dist] - https://medium.com/@lukemenzies/using-machine-learning-to-perform-text-clustering-382ab33eb32a
+
+
+[preproc+gram+selecting topics probs] - https://www.machinelearningplus.com/nlp/topic-modeling-visualization-how-to-present-results-lda-models/
+
+
+
+
+
+
+
+
+
+
+
+
+https://github.com/edazizovv/news_embedder/blob/master/news_embedder/mass/embedding.py
+https://github.com/topics/pre-trained-language-models?l=python
+https://towardsdatascience.com/contextualized-topic-modeling-with-python-eacl2021-eacf6dfa576
+https://towardsdatascience.com/topic-modelling-in-python-with-spacy-and-gensim-dc8f7748bdbf
+https://towardsdatascience.com/topic-modeling-with-bert-779f7db187e6
+https://www.kaggle.com/code/dskswu/topic-modeling-bert-lda
+https://medium.com/analytics-vidhya/bert-for-topic-modeling-bert-vs-lda-8076e72c602b
+https://github.com/flairNLP/flair
+https://towardsdatascience.com/use-cases-of-googles-universal-sentence-encoder-in-production-dd5aaab4fc15
+https://towardsdatascience.com/text-classification-in-spark-nlp-with-bert-and-universal-sentence-encoders-e644d618ca32
+https://www.tensorflow.org/hub/tutorials/semantic_similarity_with_tf_hub_universal_encoder
+https://stackoverflow.com/questions/71195167/fine-tune-universal-sentence-encoder-embeddings
+https://github.com/tofunlp/sister
