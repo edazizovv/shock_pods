@@ -13,45 +13,22 @@ from sklearn.decomposition import LatentDirichletAllocation
 from sklearn.model_selection import GridSearchCV
 
 #
-
+from preprocess import tokenize, exclude_stopwords, len_cut, lemma, stemma
 
 #
-stop_words = stopwords.words('english')
 data = pandas.read_csv('../headlines_en_clean.csv')
 
 
-def is_number(symbol):
-    numbers = '1234567890'
-    return symbol in numbers
+tokenized = data['text'].copy()
+tokenized = tokenized.apply(func=tokenize)
+tokenized = tokenized.str.lower()
+tokenized = tokenized.apply(func=exclude_stopwords)
+tokenized = tokenized.apply(func=len_cut)
+# tokenized = tokenized.apply(func=lemma)
+tokenized = tokenized.apply(func=stemma)
 
 
-def is_symbol(symbol):
-    symbols = ',.;:-?!/\\()"' + "'"
-    return symbol in symbols
-
-
-def is_spaces(symbol):
-    spaces = ' \n'
-    return symbol in spaces
-
-
-def not_all_numbers(text):
-    return not all([is_number(x) for x in text if (not is_symbol(x)) and (not is_spaces(x))])
-
-
-def tokenize(text):
-    text_wordlist = []
-    for x in re.split(r'([.,!?\s]+)', text):
-        if x and (x not in ['.', ' ', ', ', '. ']) and (x.lower() not in stop_words) and not_all_numbers(x):
-            text_wordlist.append(x)
-    return text_wordlist
-
-
-tokenized = data['text'].apply(func=tokenize).values.tolist()
-
-dictionary = corpora.Dictionary(tokenized)
-
-corpus = numpy.array([' '.join(token) for token in tokenized])
+corpus = tokenized.values
 cvt = CountVectorizer(ngram_range=(1, 3), min_df=0.0, max_df=1.0)
 corpus = pandas.DataFrame(data=cvt.fit_transform(corpus).toarray(), columns=cvt.get_feature_names())
 

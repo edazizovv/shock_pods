@@ -1,15 +1,17 @@
-#
 # https://www.datacamp.com/tutorial/stemming-lemmatization-python
+#
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer, SnowballStemmer
 
-
-# gensim.parsing.preprocessing.STOPWORDS
 
 # SOME CLEANING
 
-punctuations = "?:!.,;()"
+# gensim.parsing.preprocessing.STOPWORDS
+punctuations = "?:!.,;()-\'\""
 
 def tokenize(text):
-    text_wordlist = [x for x in nltk.word_tokenize(text) if x not in punctuations]
+    text_wordlist = [x for x in word_tokenize(text) if x not in punctuations]
     return ' '.join(text_wordlist)
 
 # STOPWORDS

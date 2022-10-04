@@ -6,65 +6,38 @@ import re
 #
 import numpy
 import pandas
+from simcse import SimCSE
 from gensim import corpora
 from nltk.corpus import stopwords
 from octis.models.CTM import CTM
 from octis.dataset.dataset import Dataset
 
 #
-
+from preprocess import tokenize, exclude_stopwords, len_cut, lemma, stemma
 
 #
-stop_words = stopwords.words('english')
 data = pandas.read_csv('../headlines_en_clean.csv')
 
 
-def is_number(symbol):
-    numbers = '1234567890'
-    return symbol in numbers
+tokenized = data['text'].copy()
+tokenized = tokenized.apply(func=tokenize)
+tokenized = tokenized.str.lower()
+tokenized = tokenized.apply(func=exclude_stopwords)
+tokenized = tokenized.apply(func=len_cut)
+# tokenized = tokenized.apply(func=lemma)
+tokenized = tokenized.apply(func=stemma)
 
 
-def is_symbol(symbol):
-    symbols = ',.;:-?!/\\()"' + "'"
-    return symbol in symbols
+sentences = tokenized.values.tolist()
 
-
-def is_spaces(symbol):
-    spaces = ' \n'
-    return symbol in spaces
-
-
-def not_all_numbers(text):
-    return not all([is_number(x) for x in text if (not is_symbol(x)) and (not is_spaces(x))])
-
-
-def tokenize(text):
-    text_wordlist = []
-    for x in re.split(r'([.,!?\s]+)', text):
-        if x and (x not in ['.', ' ', ', ', '. ']) and (x.lower() not in stop_words) and not_all_numbers(x):
-            text_wordlist.append(x)
-    return text_wordlist
-
-
-def replace_symbols(text):
-    result = ''
-    for x in text:
-        if not is_symbol(x):
-            result += x
-    return result
-
-
-tokenized = data['text'].apply(func=replace_symbols).apply(func=tokenize).values.tolist()
-sentences = [' '.join(text_list) for text_list in tokenized]
-'''
 model = SimCSE("princeton-nlp/sup-simcse-bert-base-uncased")
 embeddings = model.encode(sentences)
 pandas.DataFrame(data=embeddings.numpy()).to_csv('./embeddings.csv', index=False)
-'''
+
 # '''
 embeddings = pandas.read_csv('./embeddings.csv').values
 
-'''
+
 dataset = pandas.DataFrame(data={'document': sentences})
 dataset['partition'] = 'train'
 _dataset = dataset.copy()
@@ -73,11 +46,11 @@ __dataset = dataset.copy()
 __dataset['partition'] = 'test'
 dataset = pandas.concat((dataset, _dataset, __dataset), axis=0, ignore_index=True)
 dataset.to_csv('./dataset/corpus.tsv', sep='\t', index=False, header=False)
-dictionary = list(corpora.Dictionary(tokenized).values())
+dictionary = list(corpora.Dictionary(tokenized.str.split(' ')).values())
 with open('./dataset/vocabulary.txt', 'w') as f:
     for line in dictionary:
         f.write('{0}\n'.format(line))
-'''
+
 
 dataset = Dataset()
 dataset.load_custom_dataset_from_folder("./dataset")

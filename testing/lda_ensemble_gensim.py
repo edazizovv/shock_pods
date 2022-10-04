@@ -12,46 +12,28 @@ from gensim.models.phrases import Phrases, Phraser
 
 
 #
-
+from preprocess import tokenize, exclude_stopwords, len_cut, lemma, stemma
 
 #
 if __name__ == '__main__':
-    stop_words = stopwords.words('english')
+
     data = pandas.read_csv('../headlines_en_clean.csv')
 
+    tokenized = data['text'].copy()
+    tokenized = tokenized.apply(func=tokenize)
+    tokenized = tokenized.str.lower()
+    tokenized = tokenized.apply(func=exclude_stopwords)
+    tokenized = tokenized.apply(func=len_cut)
+    # tokenized = tokenized.apply(func=lemma)
+    tokenized = tokenized.apply(func=stemma)
 
-    def is_number(symbol):
-        numbers = '1234567890'
-        return symbol in numbers
-
-
-    def is_symbol(symbol):
-        symbols = ',.;:-?!/\\()"' + "'"
-        return symbol in symbols
-
-
-    def is_spaces(symbol):
-        spaces = ' \n'
-        return symbol in spaces
-
-
-    def not_all_numbers(text):
-        return not all([is_number(x) for x in text if (not is_symbol(x)) and (not is_spaces(x))])
-
-
-    def tokenize(text):
-        text_wordlist = []
-        for x in re.split(r'([.,!?\s]+)', text):
-            if x and (x not in ['.', ' ', ', ', '. ']) and (x.lower() not in stop_words) and not_all_numbers(x):
-                text_wordlist.append(x)
-        return text_wordlist
-
-
-    tokenized = data['text'].apply(func=tokenize).values.tolist()
-
-    token = [to for to in tokenized]
+    token = [to.split(' ') for to in tokenized.values.tolist()]
     grams = Phrases(token, min_count=1, threshold=3, delimiter=' ')
     phraser = Phraser(grams)
+
+    tokenized = []
+    for sent in token:
+        tokenized.append(phraser[sent])
 
     dictionary = corpora.Dictionary(tokenized)
     corpus = [dictionary.doc2bow(text) for text in tokenized]
