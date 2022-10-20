@@ -16,7 +16,15 @@ from octis.dataset.dataset import Dataset
 from preprocess import tokenize, exclude_stopwords, len_cut, lemma, stemma
 
 #
-data = pandas.read_csv('../headlines_en_clean.csv')
+# data = pandas.read_csv('../headlines_en_clean.csv')
+
+# """
+data = pandas.concat((pandas.read_csv('../headlines_en_clean.csv'),
+                      pandas.read_csv('../breaking911_clean.csv')),
+                     axis=0, ignore_index=True)
+# data = data.iloc[:10000, :]
+# """
+# raise Exception("NATO")
 
 
 tokenized = data['text'].copy()
@@ -24,15 +32,15 @@ tokenized = tokenized.apply(func=tokenize)
 tokenized = tokenized.str.lower()
 tokenized = tokenized.apply(func=exclude_stopwords)
 tokenized = tokenized.apply(func=len_cut)
-# tokenized = tokenized.apply(func=lemma)
-tokenized = tokenized.apply(func=stemma)
+tokenized = tokenized.apply(func=lemma)
+# tokenized = tokenized.apply(func=stemma)
 
 
 sentences = tokenized.values.tolist()
 
-model = SimCSE("princeton-nlp/sup-simcse-bert-base-uncased")
-embeddings = model.encode(sentences)
-pandas.DataFrame(data=embeddings.numpy()).to_csv('./embeddings.csv', index=False)
+# model = SimCSE("princeton-nlp/sup-simcse-bert-base-uncased")
+# embeddings = model.encode(sentences)
+# pandas.DataFrame(data=embeddings.numpy()).to_csv('./embeddings.csv', index=False)
 
 # '''
 embeddings = pandas.read_csv('./embeddings.csv').values
@@ -55,7 +63,13 @@ with open('./dataset/vocabulary.txt', 'w') as f:
 dataset = Dataset()
 dataset.load_custom_dataset_from_folder("./dataset")
 
-model = CTM(num_topics=5, inference_type='combined', bert_model='princeton-nlp/sup-simcse-bert-base-uncased')
+model = CTM(num_topics=2, inference_type='combined', bert_model='princeton-nlp/sup-simcse-bert-base-uncased')
 # model = CTM(num_topics=5, inference_type='combined', bert_model='bert-base-nli-mean-tokens')
-output = model.train_model(dataset)
+output = model.train_model(dataset, top_words=10)
+topic_words = output['topics']
+data['propensity'] = numpy.max(output['topic-document-matrix'], axis=0)
+data['topic'] = numpy.argmax(output['topic-document-matrix'], axis=0)
+
 topics = output['topics']
+topics = {'topic': list(range(len(topics))), 'words': ['; '.join(x) for x in topics]}
+topics = pandas.DataFrame(data=topics)

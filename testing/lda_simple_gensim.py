@@ -14,7 +14,15 @@ from gensim.models.phrases import Phrases, Phraser
 from preprocess import tokenize, exclude_stopwords, len_cut, lemma, stemma
 
 #
-data = pandas.read_csv('../headlines_en_clean.csv')
+# data = pandas.read_csv('../headlines_en_clean.csv')
+
+# """
+data = pandas.concat((pandas.read_csv('../headlines_en_clean.csv'),
+                      pandas.read_csv('../breaking911_clean.csv')),
+                     axis=0, ignore_index=True)
+# data = data.iloc[:10000, :]
+# """
+# raise Exception("NATO")
 
 tokenized = data['text'].copy()
 tokenized = tokenized.apply(func=tokenize)
@@ -36,7 +44,7 @@ for sent in token:
 dictionary = corpora.Dictionary(tokenized)
 corpus = [dictionary.doc2bow(text) for text in tokenized]
 
-n_topics = 4
+n_topics = 2
 model = LdaModel(corpus=corpus, num_topics=n_topics, id2word=dictionary, passes=100, alpha='auto')
 
 for i, topic in enumerate(model.print_topics(5)):
@@ -78,8 +86,8 @@ def find_propensity(row, thresh=0.9):
             return None
 
 
-modelled['topic'] = modelled.iloc[:, 0:(n_topics-1)].apply(find_topic, args=(max,), axis=1)
-modelled['propensity'] = modelled.iloc[:, 0:(n_topics-1)].apply(find_propensity, args=(max,), axis=1)
+modelled['topic'] = modelled.iloc[:, :n_topics].apply(find_topic, args=(max,), axis=1)
+modelled['propensity'] = modelled.iloc[:, :n_topics].apply(find_propensity, args=(max,), axis=1)
 modelled.drop(columns=modelled.columns[:n_topics], inplace=True)
 
 magi = modelled.groupby(by='topic')['propensity'].describe()

@@ -17,7 +17,15 @@ from preprocess import tokenize, exclude_stopwords, len_cut, lemma, stemma
 #
 if __name__ == '__main__':
 
-    data = pandas.read_csv('../headlines_en_clean.csv')
+    # data = pandas.read_csv('../headlines_en_clean.csv')
+
+    # """
+    data = pandas.concat((pandas.read_csv('../headlines_en_clean.csv'),
+                          pandas.read_csv('../breaking911_clean.csv')),
+                         axis=0, ignore_index=True)
+    # data = data.iloc[:10000, :]
+    # """
+    # raise Exception("NATO")
 
     tokenized = data['text'].copy()
     tokenized = tokenized.apply(func=tokenize)
@@ -38,7 +46,7 @@ if __name__ == '__main__':
     dictionary = corpora.Dictionary(tokenized)
     corpus = [dictionary.doc2bow(text) for text in tokenized]
 
-    n_topics = 10
+    n_topics = 2
     model = EnsembleLda(corpus=corpus, num_topics=n_topics, id2word=dictionary, passes=100, alpha='symmetric')
 
     try:
@@ -87,8 +95,8 @@ if __name__ == '__main__':
                 return None
 
 
-    modelled['topic'] = modelled.iloc[:, 0:(n_topics-1)].apply(find_topic, args=(max,), axis=1)
-    modelled['propensity'] = modelled.iloc[:, 0:(n_topics-1)].apply(find_propensity, args=(max,), axis=1)
+    modelled['topic'] = modelled.iloc[:, :n_topics].apply(find_topic, args=(max,), axis=1)
+    modelled['propensity'] = modelled.iloc[:, :n_topics].apply(find_propensity, args=(max,), axis=1)
     modelled.drop(columns=modelled.columns[:n_topics], inplace=True)
 
     magi = modelled.groupby(by='topic')['propensity'].describe()

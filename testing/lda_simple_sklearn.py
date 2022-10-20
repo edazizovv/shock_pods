@@ -15,8 +15,15 @@ from sklearn.decomposition import LatentDirichletAllocation
 from preprocess import tokenize, exclude_stopwords, len_cut, lemma, stemma
 
 #
-data = pandas.read_csv('../headlines_en_clean.csv')
+# data = pandas.read_csv('../headlines_en_clean.csv')
 
+# """
+data = pandas.concat((pandas.read_csv('../headlines_en_clean.csv'),
+                      pandas.read_csv('../breaking911_clean.csv')),
+                     axis=0, ignore_index=True)
+data = data.iloc[:10000, :]
+# """
+# raise Exception("NATO")
 
 tokenized = data['text'].copy()
 tokenized = tokenized.apply(func=tokenize)
@@ -31,7 +38,7 @@ corpus = tokenized.values
 cvt = CountVectorizer(ngram_range=(1, 3), min_df=0.0, max_df=1.0)
 corpus = pandas.DataFrame(data=cvt.fit_transform(corpus).toarray(), columns=cvt.get_feature_names())
 
-n_topics = 4
+n_topics = 2
 model = LatentDirichletAllocation(n_components=n_topics)
 model.fit(X=corpus)
 
