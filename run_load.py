@@ -9,7 +9,7 @@ import pandas
 
 
 #
-from grab.go import grab_telegram
+from shock_pods.grab.go import grab_telegram
 
 #
 

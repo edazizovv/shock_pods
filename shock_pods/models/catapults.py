@@ -20,8 +20,8 @@ from gensim.models.doc2vec import TaggedDocument
 from gensim.models.phrases import Phrases, Phraser
 from gensim.models import Word2Vec, FastText, Doc2Vec, EnsembleLda
 #
-from extensions import TopicWordsEstimator
-from preprocess import tokenize, exclude_stopwords, len_cut, lemma, stemma
+from shock_pods.models.extensions import TopicWordsEstimator
+from shock_pods.models.preprocess import tokenize, exclude_stopwords, len_cut, lemma, stemma
 
 
 #
